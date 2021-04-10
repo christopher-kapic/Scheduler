@@ -6,7 +6,7 @@ const schedule = {
   title: "CS Courses for 2018-2019"
 };
 
-export default function App() {
+const App = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.bannerStyle}>{schedule.title}</Text>
@@ -26,3 +26,5 @@ const styles = StyleSheet.create({
     fontSize: 32,
   }
 });
+
+export default App;
