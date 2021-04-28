@@ -1,14 +1,21 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, ScrollView, View, Text, TouchableOpacity } from 'react-native';
 import Course from './Course';
+import TermSelector from './TermSelector'
+import { getCourseTerm, terms } from '../utils/course'
+import CourseSelector from './CourseSelector'
 
-const CourseList = ({ courses }) => (
+const CourseList = ({courses}) => {
+  const [selectedTerm, setSelectedTerm] = useState('Fall');
+  const termCourses = courses.filter(course => selectedTerm === getCourseTerm(course));
+  return (
     <ScrollView>
-      <View style={styles.courseList}>
-        { courses.map(course => <Course key={course.id} course={ course } />) }
-      </View>
+      <TermSelector terms={terms} selectedTerm={selectedTerm} setSelectedTerm={setSelectedTerm} />
+      <CourseSelector courses={termCourses} />
     </ScrollView>
   );
+};
+
 const styles = StyleSheet.create({
   courseButton: {
     flex: 1,
