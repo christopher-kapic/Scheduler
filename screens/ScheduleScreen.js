@@ -2,13 +2,27 @@ import React, { useContext, useState, useEffect } from 'react';
 import { SafeAreaView, StyleSheet, Text } from 'react-native';
 import CourseList from '../components/CourseList';
 import UserContext from '../UserContext';
+import firebase from '../firebase'
 
+const db = firebase.database().ref('posts/archived');
 
+const fixCourses = json => ({
+  ...json,
+  courses: Object.values(json.courses)
+});
 
 const ScheduleScreen = ({navigation}) => {
   const [schedule, setSchedule] = useState({ title: '', courses: [] });
   const user = useContext(UserContext);
   const canEdit = user && user.role === 'admin';
+
+  useEffect(() => {
+    const db = firebase.database().ref();
+    db.on('value', snap => {
+      if (snap.val()) setSchedule(fixCourses(snap.val()))    ;
+    }, error => console.log(error));
+    return () => { db.off('value', handleData); };
+  }, []);
 
   const fetchSchedule = async () => {
     const response = await fetch(url);
