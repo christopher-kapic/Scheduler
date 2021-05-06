@@ -37,7 +37,7 @@ const CourseEditScreen = ({navigation, route}) => {
             meets: course.meets,
             title: course.title,
             validationSchema:{validationSchema}
-          }}>
+          }} onSubmit={values => handleSubmit(values)}>
           <Form.Field
             name="id"
             leftIcon="identifier"
@@ -56,6 +56,8 @@ const CourseEditScreen = ({navigation, route}) => {
             leftIcon="format-title"
             placeholder="Introduction to programming"
           />
+          <Form.Button title={'Update'} />
+          {<Form.ErrorMessage error={submitError} visible={true} />}
         </Form>
       </ScrollView>
     </SafeAreaView>
