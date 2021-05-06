@@ -2,9 +2,8 @@ import React, { useContext, useState, useEffect } from 'react';
 import { SafeAreaView, StyleSheet, Text } from 'react-native';
 import CourseList from '../components/CourseList';
 import UserContext from '../UserContext';
-import firebase from '../firebase'
-
-const db = firebase.database().ref('posts/archived');
+import CourseEditScreen from './CourseEditScreen';
+import { firebase } from '../utils/firebase';
 
 const fixCourses = json => ({
   ...json,
@@ -12,39 +11,21 @@ const fixCourses = json => ({
 });
 
 const ScheduleScreen = ({navigation}) => {
-  const [schedule, setSchedule] = useState({ title: '', courses: [] });
   const user = useContext(UserContext);
-  const canEdit = user && user.role === 'admin';
-
-  useEffect(() => {
-    const db = firebase.database().ref();
-    db.on('value', snap => {
-      if (snap.val()) setSchedule(fixCourses(snap.val()))    ;
-    }, error => console.log(error));
-    return () => { db.off('value', handleData); };
-  }, []);
-
-  const fetchSchedule = async () => {
-    const response = await fetch(url);
-    if (!response.ok) throw response;
-    const json = await response.json();
-    setSchedule(json);
-  };
+  const canEdit = user && user.role == 'admin';
+  const [schedule, setSchedule] = useState({ title: '', courses: [] });
 
   const view = (course) => {
     navigation.navigate(canEdit ? 'CourseEditScreen' : 'CourseDetailScreen', { course });
   };
 
-  const url = 'https://courses.cs.northwestern.edu/394/data/cs-courses.php';
-
   useEffect(() => {
-    const fetchSchedule =  async () => {
-      const response = await fetch(url);
-      if (!response.ok) throw response;
-      const json = await response.json();
-      setSchedule(json);
+    const db = firebase.database().ref();
+    const handleData = snap => {
+      if (snap.val()) setSchedule(fixCourses(snap.val()));
     }
-    fetchSchedule();
+    db.on('value', handleData, error => alert(error));
+    return () => { db.off('value', handleData); };
   }, []);
 
   return (

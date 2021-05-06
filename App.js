@@ -10,7 +10,15 @@ import UserContext from './UserContext'
 const Stack = createStackNavigator();
 
 const App = () => {
-  const [user, setUser] = useState({ role: 'admin' });
+  const [auth, setAuth] = useState();
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    firebase.auth().onAuthStateChanged((auth) => {
+      setAuth(auth);
+    });
+  }, []);
+
   return (
     <UserContext.Provider value={user}>
       <NavigationContainer>
@@ -27,6 +35,15 @@ const App = () => {
             component={CourseEditScreen}
             options={{ title: 'Course Editor'}} 
           />
+          <Stack.Screen name="RegisterScreen" component={RegisterScreen} />
+          <Stack.Screen component={SchedulerScreen}
+              options={({navigation}) => ({ 
+                title: "Schedule",
+                headerRight: () => (
+                  <SignInButton navigation={navigation} user={user} />
+                ),
+              })
+            } />
         </Stack.Navigator>
       </NavigationContainer>
     </UserContext.Provider>
